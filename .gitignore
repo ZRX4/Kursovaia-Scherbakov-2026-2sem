@@ -1,0 +1,35 @@
+# === C++ ===
+*.o
+*.obj
+*.exe
+*.out
+*.app
+*.dll
+*.so
+*.dylib
+build/
+Debug/
+Release/
+cmake-build-debug/
+.vs/
+.vscode/
+.idea/
+
+# === Java ===
+*.class
+*.jar
+*.war
+*.ear
+target/
+out/
+bin/
+.gradle/
+build/
+.settings/
+.classpath
+.project
+
+# === OS / IDE ===
+.DS_Store
+Thumbs.db
+*.log
