@@ -1,5 +1,5 @@
 #include "card.hpp"
-#include <isotream>
+#include <iostream>
 
 namespace poker {
 
@@ -31,26 +31,26 @@ namespace poker {
 		, m_rank{ rank }
 		, m_isOpen{ false }
 	{
-		std::count << "[Card ctor] " << ToString() << "\n";
+		std::cout << "[Card ctor] " << ToString() << "\n";
 	}
 
 	Card::~Card() {
-		std::count << "[Card dtor] " << ToString() << "\n";
+		std::cout << "[Card dtor] " << ToString() << "\n";
 	}
 
 	void Card::Open(){
 		if (m_isOpen) {
-			std::count << "[Card] " << ToString() << " уже открыта\n";
+			std::cout << "[Card] " << ToString() << " уже открыта\n";
 			return;
 		}
 		m_isOpen = true;
 	}
 
-	std::string::Card::ToString() const {
+	std::string Card::ToString() const {
 		// ƒл€ числовых рангов Ч приведение к int, дл€ картинок Ч буква
 		std::string rank;
 		if (m_rank >= Card::Rank::eTwo && m_rank <= Card::Rank::eTen) {
-			rank = std::to_string(static_cast<ini>(m_rank));
+			rank = std::to_string(static_cast<int>(m_rank));
 		}
 
 		else {
