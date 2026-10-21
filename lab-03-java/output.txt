@@ -1,0 +1,118 @@
+========= 1. Композиция: Deck создаёт Card =========
+[Deck ctor] Создаю колоду на 5 карт
+[Card ctor] 2H
+[Card ctor] 3H
+[Card ctor] 4H
+[Card ctor] 5H
+[Card ctor] 6H
+[Deck] Содержимое: 2H 3H 4H 5H 6H
+[Deck] Перемешано
+[Card ctor] 6H
+Выдана карта: 6H
+(Колода и её карты будут уничтожены GC когда-нибудь)
+
+========= 2. Агрегация: Game использует внешний Deck =========
+[Deck ctor] Создаю колоду на 10 карт
+[Card ctor] 2H
+[Card ctor] 3H
+[Card ctor] 4H
+[Card ctor] 5H
+[Card ctor] 6H
+[Card ctor] 7H
+[Card ctor] 8H
+[Card ctor] 9H
+[Card ctor] 10H
+[Card ctor] JH
+[Game ctor] Игра "Sport Hold'em" создана, игроков: 5
+=== Игра: Sport Hold'em | Игроков: 5 | Раздача: 0 ===
+Карт в колоде: 10 | Осталось: 10
+[Game] Раздача #1 начата
+[Game] Раунд торговли завершён
+
+--- После выхода из блока game колода всё ещё работает: ---
+[Deck] Содержимое: 2H 3H 4H 5H 6H 7H 8H 9H 10H JH
+Осталось карт: 10
+
+========= 3. Проверка правила =========
+[Deck] Неверный размер колоды: 999. Использую 52
+[Deck ctor] Создаю колоду на 52 карт
+[Card ctor] 2H
+[Card ctor] 3H
+[Card ctor] 4H
+[Card ctor] 5H
+[Card ctor] 6H
+[Card ctor] 7H
+[Card ctor] 8H
+[Card ctor] 9H
+[Card ctor] 10H
+[Card ctor] JH
+[Card ctor] QH
+[Card ctor] KH
+[Card ctor] AH
+[Card ctor] 2D
+[Card ctor] 3D
+[Card ctor] 4D
+[Card ctor] 5D
+[Card ctor] 6D
+[Card ctor] 7D
+[Card ctor] 8D
+[Card ctor] 9D
+[Card ctor] 10D
+[Card ctor] JD
+[Card ctor] QD
+[Card ctor] KD
+[Card ctor] AD
+[Card ctor] 2C
+[Card ctor] 3C
+[Card ctor] 4C
+[Card ctor] 5C
+[Card ctor] 6C
+[Card ctor] 7C
+[Card ctor] 8C
+[Card ctor] 9C
+[Card ctor] 10C
+[Card ctor] JC
+[Card ctor] QC
+[Card ctor] KC
+[Card ctor] AC
+[Card ctor] 2S
+[Card ctor] 3S
+[Card ctor] 4S
+[Card ctor] 5S
+[Card ctor] 6S
+[Card ctor] 7S
+[Card ctor] 8S
+[Card ctor] 9S
+[Card ctor] 10S
+[Card ctor] JS
+[Card ctor] QS
+[Card ctor] KS
+[Card ctor] AS
+Итоговый размер: 52
+
+========= 4. Ссылки и копии =========
+[Card ctor] AH
+cardA == cardB: true  (это ОДИН объект)
+cardA.isOpen(): false
+cardA.isOpen() после cardB.open(): true  ← cardA "тоже изменился" — это тот же объект
+[Card ctor] AH
+cardA == cardC: false  (это РАЗНЫЕ объекты)
+cardA.equals(cardC): false  (equals по умолчанию сравнивает ссылки)
+
+========= 5. AutoCloseable / try-with-resources =========
+[+] Журнал открыт: Раздача #1
+    Игроки сделали ставки
+    Открыт флоп
+    Раунд завершён
+    Внутри блока try — журнал ещё открыт
+[-] Журнал закрыт: Раздача #1
+После блока try — журнал закрыт (close() вызван автоматически)
+
+========= 6. Сборщик мусора =========
+[Card ctor] KS
+Создана временная карта: KS
+После выхода из createTemporaryCard: объект жив? true
+(Локальная переменная temp уже вне области видимости,
+ но GC её ещё не собрал — момент неизвестен)
+После System.gc(): объект жив? false
+(GC собрал объект)
