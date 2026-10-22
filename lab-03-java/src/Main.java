@@ -67,7 +67,9 @@ public class Main {
 
     private static void demoAutoCloseable() {
         System.out.println("\n========= 5. AutoCloseable / try-with-resources =========");
+        IssueLog newlog;
         try (IssueLog log = new IssueLog("Раздача #1")) {
+            newlog=log;
             log.write("Игроки сделали ставки");
             log.write("Открыт флоп");
             log.write("Раунд завершён");
@@ -76,6 +78,7 @@ public class Main {
         // здесь Java автоматически вызвала log.close()
 
         System.out.println("После блока try — журнал закрыт (close() вызван автоматически)");
+        newlog.write("Запись не должна пройти");
     }
 
     private static void demoGarbageCollector() {
