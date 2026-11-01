@@ -1,20 +1,28 @@
-# Лабораторная работа 2. Классы, агрегация и композиция
+# Лабораторная работа 3. Часть 2 — C++ с умными указателями
 
-Тема курсового проекта: спортивный Техасский Холдем.
+Перевод проекта из ЛР 2 на умные указатели: `std::unique_ptr`,
+`std::shared_ptr`, `std::weak_ptr`. В проекте не осталось ни одного
+`new` и ни одного `delete`.
 
-## Классы
-- Card — карта
-- Deck — колода (композиция над Card)
-- Game — игра (агрегация над Deck)
+## Структура
 
-## Композиция
-Deck содержит std::vector<Card> по значению. Уничтожение Deck
-автоматически уничтожает все карты. См. секцию 1 вывода.
+- `card.hpp`, `card.cpp` — класс `Card` (без изменений из ЛР 2)
+- `deck.hpp`, `deck.cpp` — класс `Deck` (композиция `Card` по значению — не трогаем)
+- `game.hpp`, `game.cpp` — класс `Game` (поле `weak_ptr<Deck>` — агрегация)
+- `main.cpp` — демонстрации
 
-## Агрегация
-Game хранит Deck* и не владеет колодой. После уничтожения Game
-колода остаётся живой. См. секцию 2 вывода.
+## Таблица владения
+
+| Где был указатель | Владелец | Заменяется на |
+|---|---|---|
+| `Game::m_deck` | Внешний код | `std::weak_ptr<Deck>` |
+| `main: Deck* sharedDeck` | `main` | `std::shared_ptr<Deck>` |
+| `main: Deck* heapDeck` | `main` | `std::unique_ptr<Deck>` |
+| `main: Card* cardArray` | `main` | `std::unique_ptr<Card[]>` |
+| `main: Card** cardPtrArray` | `main` | `std::unique_ptr<Card> shelf[2]` |
 
 ## Сборка и запуск
-g++ -std=c++17 *.cpp -o lab02
-./lab02
+
+```bash
+g++ -std=c++17 *.cpp -o lab03cpp
+./lab03cpp

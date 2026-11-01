@@ -1,61 +1,127 @@
-#include "card.hpp"
+п»ї#include "card.hpp"
 #include "deck.hpp"
 #include "game.hpp"
 
 #include <iostream>
+#include <memory>
 
-using namespace poker; // можно в .cpp, но не в .hpp
+using namespace poker;
 
 int main() {
-    std::cout << "========= 1. Композиция: Deck владеет Card =========\n";
+    // ===== 1. РљРѕРјРїРѕР·РёС†РёСЏ: Deck РІР»Р°РґРµРµС‚ Card РїРѕ Р·РЅР°С‡РµРЅРёСЋ =====
+    std::cout << "========= 1. РљРѕРјРїРѕР·РёС†РёСЏ: Deck РІР»Р°РґРµРµС‚ Card =========\n";
     {
-        Deck deck{ 5 };            // создаём колоду на 5 карт
+        Deck deck{ 5 };
         deck.PrintAll();
         deck.Shuffle();
-        Card c = deck.DealOne();   // карта копируется наружу
-        std::cout << "Выдана карта: " << c.ToString() << "\n";
-    } // <-- здесь деструктор Deck уничтожает все Card (композиция)
+        Card c = deck.DealOne();
+        std::cout << "Р’С‹РґР°РЅР° РєР°СЂС‚Р°: " << c.ToString() << "\n";
+    }   // ~Deck в†’ ~Card РґР»СЏ РІСЃРµС… РєР°СЂС‚
 
-    std::cout << "\n========= 2. Агрегация: Game использует внешний Deck =========\n";
-    Deck* sharedDeck = new Deck{ 10 };  // создана СНАРУЖИ
-
+    // ===== 2. РђРіСЂРµРіР°С†РёСЏ: shared_ptr (РІР»Р°РґРµР»РµС†) + weak_ptr (РЅР°Р±Р»СЋРґР°С‚РµР»СЊ) =====
+    std::cout << "\n========= 2. РђРіСЂРµРіР°С†РёСЏ: shared_ptr + weak_ptr =========\n";
     {
-        Game game{ "Sport Hold'em", sharedDeck, 5 };
-        game.PrintStatus();
-        game.StartNewHand();
-        game.EndRound();
-    } // <-- деструктор Game. Колода НЕ удаляется
+        auto sharedDeck = std::make_shared<Deck>(10);
+        std::cout << "use_count РїРѕСЃР»Рµ СЃРѕР·РґР°РЅРёСЏ: " << sharedDeck.use_count() << "\n";
 
-    std::cout << "\n--- После уничтожения Game колода жива: ---\n";
-    sharedDeck->PrintAll();              // доказательство: колода работает
-    std::cout << "Осталось карт: " << sharedDeck->GetRemaining() << "\n";
+        {
+            Game game{ "Sport Hold'em", sharedDeck, 5 };
+            std::cout << "use_count РїРѕСЃР»Рµ РїРµСЂРµРґР°С‡Рё РІ Game: "
+                << sharedDeck.use_count() << "\n";   // 1 вЂ” weak_ptr РЅРµ РІР»Р°РґРµРµС‚
+            game.PrintStatus();
+            game.StartNewHand();
+            game.EndRound();
+        }   // ~Game, РєРѕР»РѕРґР° Р¶РёРІР°
 
-    delete sharedDeck;                   // удаляем сами — теперь карты исчезнут
+        std::cout << "\n--- РџРѕСЃР»Рµ СѓРЅРёС‡С‚РѕР¶РµРЅРёСЏ Game РєРѕР»РѕРґР° Р¶РёРІР°: ---\n";
+        sharedDeck->PrintAll();
+        std::cout << "РћСЃС‚Р°Р»РѕСЃСЊ РєР°СЂС‚: " << sharedDeck->GetRemaining() << "\n";
+    }   // ~Deck Рё ~Card РґР»СЏ РІСЃРµС… РєР°СЂС‚
 
-    std::cout << "\n========= 3. Проверка правила =========\n";
-    Deck badDeck{ 999 };                 // правило нарушено — сообщение в stderr
-    std::cout << "Итоговый размер: " << badDeck.GetCardCount() << "\n";
+    // ===== 3. РџСЂРѕРІРµСЂРєР° РїСЂР°РІРёР»Р° =====
+    std::cout << "\n========= 3. РџСЂРѕРІРµСЂРєР° РїСЂР°РІРёР»Р° =========\n";
+    {
+        Deck badDeck{ 999 };
+        std::cout << "РС‚РѕРіРѕРІС‹Р№ СЂР°Р·РјРµСЂ: " << badDeck.GetCardCount() << "\n";
+    }
 
-    std::cout << "\n========= 4. Стек, указатель, динамический массив =========\n";
-    Deck stackDeck{ 3 };                 // статический объект
-    Deck* heapDeck = new Deck{ 3 };      // динамический объект
-    stackDeck.Shuffle();                 // по значению
-    heapDeck->Shuffle();                 // по указателю
-    Deck& ref = *heapDeck;               // ссылка на объект
-    ref.PrintAll();
+    // ===== 4. unique_ptr: РѕРґРёРЅ РІР»Р°РґРµР»РµС†, Р±РµР· delete =====
+    std::cout << "\n========= 4. unique_ptr: РѕРґРёРЅ РІР»Р°РґРµР»РµС† =========\n";
+    {
+        auto heapDeck = std::make_unique<Deck>(3);
+        heapDeck->Shuffle();
+        heapDeck->PrintAll();
+    }   // Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРёР№ delete в†’ ~Deck Рё ~Card
 
-    // Динамический массив объектов класса
-    Card* cardArray = new Card[2]{ {Card::Suit::eHearts, Card::Rank::eAce},
-                                   {Card::Suit::eSpades, Card::Rank::eKing} };
-    delete[] cardArray;
+    // ===== 5. unique_ptr: РїРµСЂРµРґР°С‡Р° РІР»Р°РґРµРЅРёСЏ С‡РµСЂРµР· std::move =====
+    std::cout << "\n========= 5. unique_ptr: РїРµСЂРµРґР°С‡Р° РІР»Р°РґРµРЅРёСЏ =========\n";
+    {
+        auto original = std::make_unique<Deck>(3);
+        std::cout << "original РґРѕ move:  "
+            << (original ? "РІР»Р°РґРµРµС‚" : "РїСѓСЃС‚") << "\n";
 
-    // Массив динамических объектов класса
-    Card** cardPtrArray = new Card * [2];
-    cardPtrArray[0] = new Card{ Card::Suit::eClubs, Card::Rank::eTen };
-    cardPtrArray[1] = new Card{ Card::Suit::eDiamonds, Card::Rank::eJack };
-    for (int i = 0; i < 2; ++i) delete cardPtrArray[i];
-    delete[] cardPtrArray;
+        auto taken = std::move(original);
+        std::cout << "original РїРѕСЃР»Рµ move: "
+            << (original ? "РІР»Р°РґРµРµС‚" : "РїСѓСЃС‚") << "\n";   // РїРѕ РїР°РјСЏС‚РєРµ 5.6
+        std::cout << "taken: "
+            << (taken ? "РІР»Р°РґРµРµС‚" : "РїСѓСЃС‚") << "\n";
+    }   // ~Deck Рё ~Card РѕС‚ taken
 
-    delete heapDeck;
+    // ===== 6. shared_ptr: use_count СЂР°СЃС‚С‘С‚ Рё РїР°РґР°РµС‚ =====
+    std::cout << "\n========= 6. shared_ptr: СЃС‡С‘С‚С‡РёРє РІР»Р°РґРµР»СЊС†РµРІ =========\n";
+    {
+        auto first = std::make_shared<Deck>(3);
+        std::cout << "use_count: " << first.use_count() << "\n";   // 1
+        {
+            auto second = first;
+            std::cout << "use_count РїРѕСЃР»Рµ РєРѕРїРёРё: "
+                << first.use_count() << "\n";   // 2
+        }
+        std::cout << "use_count РїРѕСЃР»Рµ СѓРЅРёС‡С‚РѕР¶РµРЅРёСЏ РєРѕРїРёРё: "
+            << first.use_count() << "\n";   // 1
+    }   // ~Deck Рё ~Card
+
+    // ===== 7. weak_ptr: lock() СЂР°Р±РѕС‚Р°РµС‚, РїРѕРєР° Р¶РёРІ, РїСѓСЃС‚РѕР№ РїРѕСЃР»Рµ =====
+    std::cout << "\n========= 7. weak_ptr: lock Рё РїСЂРѕРІРµСЂРєР° Р¶РёР·РЅРё =========\n";
+    {
+        auto owner = std::make_shared<Deck>(3);
+        std::weak_ptr<Deck> watcher = owner;
+
+        if (auto locked = watcher.lock()) {
+            std::cout << "РџРѕРєР° Р¶РёРІ: РєР°СЂС‚ РІ РєРѕР»РѕРґРµ "
+                << locked->GetCardCount() << "\n";
+        }
+
+        owner.reset();   // РїРѕСЃР»РµРґРЅРёР№ РІР»Р°РґРµР»РµС† РѕС‚РєР°Р·Р°Р»СЃСЏ
+
+        if (auto locked = watcher.lock()) {
+            std::cout << "РџРѕСЃР»Рµ reset: РєРѕР»РѕРґР° РІСЃС‘ РµС‰С‘ Р¶РёРІР°?!\n";
+        }
+        else {
+            std::cout << "РџРѕСЃР»Рµ reset: РєРѕР»РѕРґР° СѓРЅРёС‡С‚РѕР¶РµРЅР°, "
+                << "lock() РІРµСЂРЅСѓР» РїСѓСЃС‚РѕР№ СѓРєР°Р·Р°С‚РµР»СЊ\n";
+        }
+    }
+
+    // ===== 8. РњР°СЃСЃРёРІ РѕР±СЉРµРєС‚РѕРІ: unique_ptr<Card[]> =====
+    std::cout << "\n========= 8. РњР°СЃСЃРёРІ РѕР±СЉРµРєС‚РѕРІ: unique_ptr<Card[]> =========\n";
+    {
+        auto cardArray = std::make_unique<Card[]>(2);
+        cardArray[0] = Card{ Card::Suit::eHearts, Card::Rank::eAce };
+        cardArray[1] = Card{ Card::Suit::eSpades, Card::Rank::eKing };
+        std::cout << "РљР°СЂС‚С‹: " << cardArray[0].ToString()
+            << ", " << cardArray[1].ToString() << "\n";
+    }   // delete[] в†’ ~Card РґР»СЏ РѕР±РѕРёС…
+
+    // ===== 9. РњР°СЃСЃРёРІ СѓРєР°Р·Р°С‚РµР»РµР№: unique_ptr<Card> shelf[2] (РїР°РјСЏС‚РєР° 5.4) =====
+    std::cout << "\n========= 9. РњР°СЃСЃРёРІ СѓРєР°Р·Р°С‚РµР»РµР№: unique_ptr<Card> shelf[2] =========\n";
+    {
+        std::unique_ptr<Card> shelf[2];
+        shelf[0] = std::make_unique<Card>(Card::Suit::eClubs, Card::Rank::eTen);
+        shelf[1] = std::make_unique<Card>(Card::Suit::eDiamonds, Card::Rank::eJack);
+        std::cout << "РљР°СЂС‚С‹: " << shelf[0]->ToString()
+            << ", " << shelf[1]->ToString() << "\n";
+    }   // РєР°Р¶РґС‹Р№ unique_ptr СѓРЅРёС‡С‚РѕР¶Р°РµС‚ СЃРІРѕР№ Card
+
     return 0;
 }
