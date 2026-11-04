@@ -10,6 +10,9 @@ private:
 
 public:
 	BotPlayer(std::string_view name, int stack, std::string_view strategy);
+	//конструктор копирования
+	BotPlayer(const BotPlayer& other);
+	BotPlayer& operator=(const BotPlayer& other);
 	~BotPlayer() override;
 
 	std::string Describe() const override;

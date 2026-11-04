@@ -7,6 +7,24 @@ HumanPlayer::HumanPlayer(std::string_view name, int stack)
 	std::cout << "[HumanPlayer ctor] " << GetName() << "\n";
 }
 
+HumanPlayer::HumanPlayer(const HumanPlayer& other)
+	: BasePlayer{ other }
+
+{
+	std::cout << "[HumanPlayer copy ctor]\n";
+}
+
+HumanPlayer& HumanPlayer::operator=(const HumanPlayer& other){
+	if (this == &other) {
+		return *this;
+	}
+	BasePlayer::operator=(other);
+
+
+	return *this;
+}
+
+
 std::string HumanPlayer::Describe() const {
 	return BasePlayer::Describe() + "(Human)";
 }

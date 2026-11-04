@@ -8,6 +8,8 @@ class BasePlayer {
 public:
 	//конструктор и вирт. деструктор
 	BasePlayer(std::string_view name, int stack);
+	BasePlayer(const BasePlayer& other);
+	BasePlayer& operator=(const BasePlayer& other);
 
 	virtual ~BasePlayer();
 
@@ -16,6 +18,9 @@ public:
 	int GetStack() const;
 	int GetId() const;
 	bool IsDealer() const;
+	std::shared_ptr<std::string> GetNickname() const;
+
+
 
 	//виртуальные методы
 	virtual std::string Describe() const;
@@ -25,6 +30,7 @@ public:
 	static int NextId();
 
 private:
+	std::shared_ptr<std::string> m_nickname;
 
 	inline static int s_lastId{ 0 };
 	bool m_isDealer{ false } ;
