@@ -5,12 +5,14 @@
 #include <memory>
 
 
-struct ShallowDemo {
+struct ShallowDemo 
+{
     std::shared_ptr<std::string> nickname;
 };
 
 
-int main() {
+int main() 
+{
     std::cout << "=== Тест иерархии ===\n";
 
     HumanPlayer human{ "Ivan", 500 };
@@ -32,7 +34,8 @@ int main() {
     players.push_back(std::make_unique<BotPlayer>("Beta", 1000,"Loose"));
 
     //вызов методов через базовый указатель (полиморфизм)
-    for (const auto& p : players) {
+    for (const auto& p : players) 
+    {
         std::cout << p->Describe() << " -> " << p->DecideAction() << "\n";
     }
 
@@ -44,7 +47,8 @@ int main() {
     std::cout << "Копия:    " << clone->Describe() << "\n";
 
     //проверка на то что это разные объекты
-    if (players[0].get() != clone.get()) {
+    if (players[0].get() != clone.get()) 
+    {
         std::cout << "это два разных объекта в памяти\n";
     }
 
@@ -80,12 +84,14 @@ int main() {
     std::cout << "Имя бота: " << botName << "\n";
 
     size_t pos = botName.find("_");
-    if (pos != std::string::npos) {
+    if (pos != std::string::npos) 
+    {
         std::cout << "Символ '_' найден на позиции: " << pos << "\n";
         std::string prefix = botName.substr(0, pos); // Выделяем подстроку
         std::cout << "Подстрока до '_': " << prefix << "\n";
 
-        if (prefix == "Bot") { // Сравниваем
+        if (prefix == "Bot") 
+        { // Сравниваем
             std::cout << "Сравнение прошо успешно\n";
         }
 

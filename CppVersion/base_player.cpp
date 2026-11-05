@@ -23,8 +23,10 @@ BasePlayer::BasePlayer(const BasePlayer& other)
 }
 
 
-BasePlayer& BasePlayer::operator=(const BasePlayer& other) {
-	if (this == &other) {
+BasePlayer& BasePlayer::operator=(const BasePlayer& other) 
+{
+	if (this == &other) 
+	{
 		return *this;
 	}
 
@@ -43,27 +45,32 @@ int BasePlayer::GetId() const { return m_id; }
 bool BasePlayer::IsDealer() const { return m_isDealer; }
 std::shared_ptr<std::string>BasePlayer::GetNickname() const { return m_nickname; }
 
-void BasePlayer::SitDown(BasePlayer& other) const {
+void BasePlayer::SitDown(BasePlayer& other) const
+{
 
 	std::cout << "  [this] " << GetName() << " садится за стол к " << other.GetName() << "\n";
 
 }
 
-std::string BasePlayer::Header() const {
+std::string BasePlayer::Header() const
+{
 	return(m_name + "[" + std::to_string(m_stack) + "]");
 }
 
-std::string BasePlayer::Describe() const {
+std::string BasePlayer::Describe() const
+{
 	if (m_isDealer) {
 		return(Header() + " dealer");
 	}
 	return Header();
 }
 
-int BasePlayer::NextId() {
+int BasePlayer::NextId() 
+{
 	return ++s_lastId;
 }
 
-BasePlayer::~BasePlayer() {
+BasePlayer::~BasePlayer() 
+{
 	std::cout << "[BasePlayer dtor] " << m_name << "\n";
 }

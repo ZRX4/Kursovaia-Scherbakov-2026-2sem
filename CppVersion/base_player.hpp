@@ -3,14 +3,16 @@
 #include <string_view>
 #include <memory>
 
-class BasePlayer {
+class BasePlayer 
+{
 
 public:
 	//конструктор и вирт. деструктор
 	BasePlayer(std::string_view name, int stack);
 	BasePlayer(const BasePlayer& other);
 	BasePlayer& operator=(const BasePlayer& other);
-	BasePlayer(BasePlayer&&) noexcept = default;
+
+	BasePlayer(BasePlayer&&) noexcept			 = default;
 	BasePlayer& operator=(BasePlayer&&) noexcept = default;
 
 	virtual ~BasePlayer();
@@ -18,13 +20,11 @@ public:
 	void SitDown(BasePlayer& other) const;
 
 	//геттеры
-	std::string_view GetName() const;
-	int GetStack() const;
-	int GetId() const;
-	bool IsDealer() const;
-	std::shared_ptr<std::string> GetNickname() const;
-
-
+	[[nodiscard]] std::string_view GetName() const;
+	[[nodiscard]] int GetStack() const;
+	[[nodiscard]] int GetId() const;
+	[[nodiscard]] bool IsDealer() const;
+	[[nodiscard]] std::shared_ptr<std::string> GetNickname() const;
 
 	//виртуальные методы
 	virtual std::string Describe() const;
