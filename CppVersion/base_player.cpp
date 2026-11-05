@@ -37,13 +37,17 @@ BasePlayer& BasePlayer::operator=(const BasePlayer& other) {
 	return *this;
 }
 
-
-
 std::string_view BasePlayer::GetName() const { return m_name; }
 int BasePlayer::GetStack() const { return m_stack; }
 int BasePlayer::GetId() const { return m_id; }
 bool BasePlayer::IsDealer() const { return m_isDealer; }
 std::shared_ptr<std::string>BasePlayer::GetNickname() const { return m_nickname; }
+
+void BasePlayer::SitDown(BasePlayer& other) const {
+
+	std::cout << "  [this] " << GetName() << " садится за стол к " << other.GetName() << "\n";
+
+}
 
 std::string BasePlayer::Header() const {
 	return(m_name + "[" + std::to_string(m_stack) + "]");

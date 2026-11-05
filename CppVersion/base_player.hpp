@@ -10,8 +10,12 @@ public:
 	BasePlayer(std::string_view name, int stack);
 	BasePlayer(const BasePlayer& other);
 	BasePlayer& operator=(const BasePlayer& other);
+	BasePlayer(BasePlayer&&) noexcept = default;
+	BasePlayer& operator=(BasePlayer&&) noexcept = default;
 
 	virtual ~BasePlayer();
+
+	void SitDown(BasePlayer& other) const;
 
 	//геттеры
 	std::string_view GetName() const;

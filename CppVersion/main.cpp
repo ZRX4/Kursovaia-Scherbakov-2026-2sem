@@ -62,7 +62,7 @@ int main() {
 
 
 
-    std::cout << "\n=== 4. Глубокая копия (Deep Copy) ===\n";
+    std::cout << "\n=== 5. Глубокая копия (Deep Copy) ===\n";
     HumanPlayer deepOriginal{ "Bob2.0", 1000 };
     HumanPlayer deepCopy = deepOriginal; // Вызывается созданны конструктор копирования
 
@@ -73,6 +73,28 @@ int main() {
 
     std::cout << "Оригинал после: " << *deepOriginal.GetNickname() << "\n"; 
     std::cout << "Копия после:    " << *deepCopy.GetNickname() << "\n";    
+
+
+    std::cout << "\n=== 5. Работа со строками (find, substr, сравнение) ===\n";
+    std::string botName = "Bot_Alpha";
+    std::cout << "Имя бота: " << botName << "\n";
+
+    size_t pos = botName.find("_");
+    if (pos != std::string::npos) {
+        std::cout << "Символ '_' найден на позиции: " << pos << "\n";
+        std::string prefix = botName.substr(0, pos); // Выделяем подстроку
+        std::cout << "Подстрока до '_': " << prefix << "\n";
+
+        if (prefix == "Bot") { // Сравниваем
+            std::cout << "Сравнение прошо успешно\n";
+        }
+
+    }
+
+    std::cout << "\n=== 6. Использование this для передачи объекта ===\n";
+    HumanPlayer p1{ "Ivan", 500 };
+    BotPlayer p2{ "Beta", 500, "Loose" };
+    p1.SitDown(p2); // Передаем объект p1 в метод p2
 
     std::cout << "\n=== Конец программы (смотрим деструкторы) ===\n";
     return 0;
