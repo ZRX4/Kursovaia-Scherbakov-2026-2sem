@@ -1,117 +1,90 @@
-import java.lang.ref.WeakReference;
-
-public class Main {
-    public static void main(String[] args) {
-        demoComposition();
-        demoAggregation();
-        demoRuleCheck();
-        demoReferencesAndCopies();
-        demoAutoCloseable();
-        demoGarbageCollector();
+public class Main
+{
+    public static void main(String[] args)
+    {
+        demoPolymorphism();
+        demoClone();
+        demoShallowCopy();
+        demoDeepCopy();
+        demoEqualsAndHashCode();
+        demoThis();
     }
 
-    private static void demoComposition() {
-        System.out.println("========= 1. Композиция: Deck создаёт Card =========");
-        Deck deck = new Deck(5);
-        deck.printAll();
-        deck.shuffle();
-        Card dealt = deck.dealOne();
-        System.out.println("Выдана карта: " + dealt);
-        System.out.println("(Колода и её карты будут уничтожены GC когда-нибудь)");
-    }
+    private static void demoPolymorphism()
+    {
+        System.out.println("\n=== 1. Полиморфный массив ===");
+        BasePlayer[] players = new BasePlayer[3];
+        players[0] = new HumanPlayer("Alex", 1000);
+        players[1] = new BotPlayer("Alpha", 1000, "Tight");
+        players[2] = new BotPlayer("Beta", 800, "Loose");
 
-    private static void demoAggregation() {
-        System.out.println("\n========= 2. Агрегация: Game использует внешний Deck =========");
-        Deck sharedDeck = new Deck(10);
-
-        {
-            Game game = new Game("Sport Hold'em", sharedDeck, 5);
-            game.printStatus();
-            game.startNewHand();
-            game.endRound();
-        }
-        // game вышла из области видимости, но колода жива
-
-        System.out.println("\n--- После выхода из блока game колода всё ещё работает: ---");
-        sharedDeck.printAll();
-        System.out.println("Осталось карт: " + sharedDeck.getRemaining());
-    }
-
-    private static void demoRuleCheck() {
-        System.out.println("\n========= 3. Проверка правила =========");
-        Deck badDeck = new Deck(999);
-        System.out.println("Итоговый размер: " + badDeck.getCardCount());
-    }
-
-    private static void demoReferencesAndCopies() {
-        System.out.println("\n========= 4. Ссылки и копии =========");
-
-        Card cardA = new Card(Suit.HEARTS, Rank.ACE);
-        Card cardB = cardA;   // ← это НЕ копия, это ВТОРАЯ ССЫЛКА
-
-        System.out.println("cardA == cardB: " + (cardA == cardB)
-                + "  (это ОДИН объект)");
-        System.out.println("cardA.isOpen(): " + cardA.isOpen());
-
-        cardB.open();   // меняем «через cardB»
-
-        System.out.println("cardA.isOpen() после cardB.open(): " + cardA.isOpen()
-                + "  ← cardA \"тоже изменился\" — это тот же объект");
-
-        Card cardC = new Card(Suit.HEARTS, Rank.ACE);   // явно НОВЫЙ объект
-        System.out.println("cardA == cardC: " + (cardA == cardC)
-                + "  (это РАЗНЫЕ объекты)");
-        System.out.println("cardA.equals(cardC): " + cardA.equals(cardC)
-                + "  (equals по умолчанию сравнивает ссылки)");
-    }
-
-    private static void demoAutoCloseable() {
-        System.out.println("\n========= 5. AutoCloseable / try-with-resources =========");
-        IssueLog newlog;
-        try (IssueLog log = new IssueLog("Раздача #1")) {
-            newlog=log;
-            log.write("Игроки сделали ставки");
-            log.write("Открыт флоп");
-            log.write("Раунд завершён");
-            System.out.println("    Внутри блока try — журнал ещё открыт");
-        }
-        // здесь Java автоматически вызвала log.close()
-
-        System.out.println("После блока try — журнал закрыт (close() вызван автоматически)");
-        newlog.write("Запись не должна пройти");
-    }
-
-    private static void demoGarbageCollector() {
-        System.out.println("\n========= 6. Сборщик мусора =========");
-
-        WeakReference<Card> watcher = createTemporaryCard();
-
-        System.out.println("После выхода из createTemporaryCard: объект жив? "
-                + (watcher.get() != null));
-        System.out.println("(Локальная переменная temp уже вне области видимости,");
-        System.out.println(" но GC её ещё не собрал — момент неизвестен)");
-
-        // Просим GC собрать. Это ПРОСЬБА, не команда.
-        for (int i = 0; i < 3; i++) {
-            System.gc();
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException ignored) {
-            }
-        }
-
-        boolean alive = watcher.get() != null;
-        System.out.println("После System.gc(): объект жив? " + alive);
-        if (alive) {
-            System.out.println("(GC не собрал )");
-        } else {
-            System.out.println("(GC собрал объект)");
+        for (BasePlayer p : players) {
+            System.out.println(p.describe() + " -> " + p.decideAction());
         }
     }
 
-    private static WeakReference<Card> createTemporaryCard() {
-        Card temp = new Card(Suit.SPADES, Rank.KING);
-        System.out.println("Создана временная карта: " + temp);
-        return new WeakReference<>(temp);
+    private static void demoClone()
+    {
+        System.out.println("\n=== 2. Клонирование (Clone) ===");
+
+        HumanPlayer orig = new HumanPlayer("Alex", 1000);
+        BasePlayer clon = orig.clone();
+
+        System.out.println("Оригинал: " + orig.describe());
+        System.out.println("Копия:    " + clon.describe());
+        System.out.println("Разные объекты в памяти? " + (orig != clon));
     }
+
+    private static void demoShallowCopy() 
+    {
+        System.out.println("\n=== 3. Поверхностная копия (Shallow Copy) ===");
+
+        ShallowDemo original= new ShallowDemo("Bob");
+        ShallowDemo no_original = new ShallowDemo(original);
+        
+        System.out.println("Оригинал до:   " + original.nickname);
+        no_original.nickname.append("no original ");
+        System.out.println("Оригинал после:  "+original.nickname);
+        System.out.println("Rjgbz после:  "+no_original.nickname);
+    }
+
+    private static void demoDeepCopy()
+    {
+        System.out.println("\n=== 4. Глубокая копия (Deep Copy) ===");
+
+        HumanPlayer orig = new HumanPlayer("Alex", 1000);
+        HumanPlayer copy = new HumanPlayer(orig);
+
+        System.out.println("Оригинал до:   " + orig.getNickname());
+
+        copy.getNickname().append("(no orig) ");
+        System.out.println("Оригинал после "+orig.getNickname());
+        System.out.println("Rjgbz после "+copy.getNickname());
+    }
+
+    private static void demoThis()
+    {
+        System.out.println("\n=== 6. Использование this ===");
+        HumanPlayer p1 = new HumanPlayer("Mark",1234);
+        BotPlayer p2 = new BotPlayer("Oleg",1234,"Loose");
+        //возврат this
+        BasePlayer p1_copy = p1.sitDown(p2);
+        p1_copy.sitDown(p2); 
+
+    }
+
+    private static void demoEqualsAndHashCode()
+    {
+        System.out.println("\n=== 5. Сравнение equals и hashCode ===");
+        HumanPlayer p1 = new HumanPlayer("Test", 100);
+        HumanPlayer p2 = new HumanPlayer("Test", 100);
+        HumanPlayer p3 = p1; // Ссылка на тот же объект
+
+        System.out.println("p1.equals(p2): " + p1.equals(p2) + " (разные ID)");
+        System.out.println("p1.equals(p3): " + p1.equals(p3) + " (один и тот же объект)");
+        System.out.println("p1.hashCode() == p2.hashCode(): " + (p1.hashCode() == p2.hashCode()));
+        System.out.println("p1.hashCode() == p3.hashCode(): " + (p1.hashCode() == p3.hashCode()));
+    }
+
+
 }
