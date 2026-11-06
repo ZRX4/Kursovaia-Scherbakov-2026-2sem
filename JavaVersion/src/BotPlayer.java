@@ -27,7 +27,7 @@ public class BotPlayer extends BasePlayer
     @Override
     public BasePlayer clone()
     {
-        return new BasePlayer(this);
+        return new BotPlayer(this);
     }
 
 }

@@ -1,33 +1,35 @@
+import java.util.Objects;
+
 public abstract class BasePlayer {
 
-    private static int lasTd=0;
+    private static int lastId=0;
 
     private final int id;
     private final String name;
     private final int stack;
     private final boolean isDealer;
 
-    private String nickname;
+    private StringBuilder nickname;
 
     //конструктор
 
-    protected basePlayer (String name, int stack)
+    protected BasePlayer (String name, int stack)
     {
         this.id = nextId();
         this.name = name;
         this.stack = stack;
         this.isDealer = false;
-        this.nickname = name;
+        this.nickname = new StringBuilder(name);
     }
 
     //конструктор копирования
-    protected basePlayer (BasePlayer other)
+    protected BasePlayer (BasePlayer other)
     {
         this.id = nextId();
         this.name = other.name;
         this.stack = other.stack;
         this.isDealer = other.isDealer;
-        this.nickname = new String(other.nickname);
+        this.nickname = new StringBuilder(other.nickname);
     }
 
     public static int nextId()
@@ -39,7 +41,7 @@ public abstract class BasePlayer {
     public int getStack() { return stack; }
     public int getId() { return id; }
     public boolean isDealer() { return isDealer; }
-    public String getNickname() { return nickname; }
+    public StringBuilder getNickname() { return nickname; }
 
     protected String header()
     {

@@ -1,10 +1,10 @@
 public class HumanPlayer extends BasePlayer 
 {
   
-    public HumanPlayer(String name, int stack,String strategy) 
+    public HumanPlayer(String name, int stack) 
     {
         super(name,stack);
-        System.out.println("[BotPlayer ctor] " + getName());
+        System.out.println("[HumanPlayer ctor] " + getName());
     }
 
     public HumanPlayer(HumanPlayer other)
