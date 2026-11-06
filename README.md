@@ -35,3 +35,18 @@ g++ -std=c++17 -Wall -Wextra *.cpp -o holdem_cpp
 
 # Запуск
 ./holdem_cpp
+```
+
+### Java (папка `JavaVersion`)
+Для сборки потребуется компилятор с поддержкой C++17 (например, `g++` / MinGW).
+
+```bash
+# Переход в папку
+cd JavaVersion
+
+# Компиляция проекта
+javac *.java
+
+# Запуск
+java Main
+```
