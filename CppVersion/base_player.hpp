@@ -2,6 +2,7 @@
 #include <string>
 #include <string_view>
 #include <memory>
+#include "i_betting_strategy.hpp"
 
 class BasePlayer 
 {
@@ -15,9 +16,13 @@ public:
 	BasePlayer(BasePlayer&&) noexcept			 = default;
 	BasePlayer& operator=(BasePlayer&&) noexcept = default;
 
-	virtual ~BasePlayer();
+	virtual ~BasePlayer() noexcept;
 
 	void SitDown(BasePlayer& other) const;
+
+	void SetStrategy(std::unique_ptr<IBettingStrategy> strategy);
+	
+	
 
 	//геттеры
 	[[nodiscard]] std::string_view GetName() const;
@@ -34,16 +39,19 @@ public:
 	static int NextId();
 
 private:
-	std::shared_ptr<std::string> m_nickname;
 
+	std::shared_ptr<std::string> m_nickname;
 	inline static int s_lastId{ 0 };
-	bool m_isDealer{ false } ;
+	bool m_isDealer{ false };
 	std::string m_name;
 	int m_id{};
 	int m_stack{};
 
+
+
 //Защищенный метод для наследников
 protected:
+	std::unique_ptr<IBettingStrategy> m_strategy; // объект поведения
 	std::string Header() const;
 
 };

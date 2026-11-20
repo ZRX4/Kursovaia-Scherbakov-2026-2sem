@@ -1,5 +1,6 @@
 #include "human_player.hpp"
 #include <iostream>
+#include "poker_exceptions.hpp"
 
 HumanPlayer::HumanPlayer(std::string_view name, int stack)
 	:BasePlayer{ name,stack }
@@ -34,6 +35,19 @@ std::string HumanPlayer::DecideAction() const {
 
 std::unique_ptr<BasePlayer> HumanPlayer::Clone() const {
 	return std::make_unique<HumanPlayer>(*this);
+}
+
+void HumanPlayer::MakeBet(int amount)
+{
+	if (amount > GetStack()) {
+		throw InsufficientFundsException(amount, GetStack());
+	}
+	std::cout << "[" << GetName() << "] (Human) ставит " << amount << " фишек.\n";
+}
+
+void HumanPlayer::Fold()
+{
+	std::cout << "[" << GetName() << "] (Human) пасует.\n";
 }
 
 HumanPlayer::~HumanPlayer() {
