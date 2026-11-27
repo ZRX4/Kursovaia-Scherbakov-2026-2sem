@@ -1,4 +1,4 @@
-public class Card {
+public class Card implements Comparable<Card> {
     private final Suit suit;    // final = нельзя переназначить после конструктора
     private final Rank rank;
     private boolean isOpen;
@@ -25,5 +25,14 @@ public class Card {
     @Override
     public String toString() {
         return rank.getShortName() + suit.getShortName();
+    }
+
+    @Override
+    public int compareTo(Card other) {
+        int rankCompare = Integer.compare(this.rank.getValue(), other.rank.getValue());
+        if (rankCompare != 0) {
+            return rankCompare;
+        }
+        return this.suit.compareTo(other.suit);
     }
 }
