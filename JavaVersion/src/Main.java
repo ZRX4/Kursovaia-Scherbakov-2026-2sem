@@ -11,7 +11,7 @@ public class Main {
         players.add(new HumanPlayer("Ivan", 500));
         
         BotPlayer bot = new BotPlayer("Alpha", 1000, "Tight");
-        bot.setStrategy(new AggressiveStrategy()); // Конфигурирование
+        bot.setStrategy(new AggressiveStrategy()); 
         players.add(bot);
 
         // 2. Работа через интерфейс и instanceof
@@ -22,19 +22,19 @@ public class Main {
             System.out.println("Описание (позднее): " + player.describe());
             System.out.println("Решение: " + player.decideAction());
             
-            // Аналог dynamic_cast -> instanceof 
+             
             if (player instanceof PlayerAction actionPlayer) {
                 try {
                     actionPlayer.makeBet(100); // Успешное действие
                     
                     System.out.println("  [Провокация] Пытаемся поставить 10000 фишек...");
-                    actionPlayer.makeBet(10000); // Выбросит InsufficientFundsException
+                    actionPlayer.makeBet(10000); 
                     
                 } catch (InsufficientFundsException e) {
-                    // частное исключение (по ссылке)
+                    // частное исключение 
                     System.err.println("  [ОШИБКА] " + e.getMessage());
                 } catch (Exception e) {
-                    // Общее исключение (идет вторым)
+                    // Общее исключение 
                     System.err.println("  [НЕИЗВЕСТНАЯ ОШИБКА] " + e.getMessage());
                 }
             }
@@ -47,7 +47,7 @@ public class Main {
 
         // 4. Comparable и try-with-resources
         System.out.println("\n--- Comparable и try-with-resources ---");
-        // Используем твой IssueLog, который реализует AutoCloseable
+        
         try (IssueLog log = new IssueLog("Лог Сортировки")) {
             List<Card> deck = new ArrayList<>();
             deck.add(new Card(Suit.HEARTS, Rank.ACE));
@@ -57,6 +57,6 @@ public class Main {
             Collections.sort(deck); // Сортировка работает через Comparable
             log.write("Карты отсортированы: " + deck);
             
-        } // log.close() вызовется автоматически!
+        } 
     }
 }
