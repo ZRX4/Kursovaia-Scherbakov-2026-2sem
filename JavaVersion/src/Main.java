@@ -1,90 +1,62 @@
-public class Main
-{
-    public static void main(String[] args)
-    {
-        demoPolymorphism();
-        demoClone();
-        demoShallowCopy();
-        demoDeepCopy();
-        demoEqualsAndHashCode();
-        demoThis();
-    }
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-    private static void demoPolymorphism()
-    {
-        System.out.println("\n=== 1. Полиморфный массив ===");
-        BasePlayer[] players = new BasePlayer[3];
-        players[0] = new HumanPlayer("Alex", 1000);
-        players[1] = new BotPlayer("Alpha", 1000, "Tight");
-        players[2] = new BotPlayer("Beta", 800, "Loose");
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("=== ЛР5 (Java): Полиморфизм и Исключения ===\n");
 
-        for (BasePlayer p : players) {
-            System.out.println(p.describe() + " -> " + p.decideAction());
-        }
-    }
-
-    private static void demoClone()
-    {
-        System.out.println("\n=== 2. Клонирование (Clone) ===");
-
-        HumanPlayer orig = new HumanPlayer("Alex", 1000);
-        BasePlayer clon = orig.clone();
-
-        System.out.println("Оригинал: " + orig.describe());
-        System.out.println("Копия:    " + clon.describe());
-        System.out.println("Разные объекты в памяти? " + (orig != clon));
-    }
-
-    private static void demoShallowCopy() 
-    {
-        System.out.println("\n=== 3. Поверхностная копия (Shallow Copy) ===");
-
-        ShallowDemo original= new ShallowDemo("Bob");
-        ShallowDemo no_original = new ShallowDemo(original);
+        // 1. Полиморфный массив
+        List<BasePlayer> players = new ArrayList<>();
+        players.add(new HumanPlayer("Ivan", 500));
         
-        System.out.println("Оригинал до:   " + original.nickname);
-        no_original.nickname.append("no original ");
-        System.out.println("Оригинал после:  "+original.nickname);
-        System.out.println("Rjgbz после:  "+no_original.nickname);
+        BotPlayer bot = new BotPlayer("Alpha", 1000, "Tight");
+        bot.setStrategy(new AggressiveStrategy()); 
+        players.add(bot);
+
+        // 2. Работа через интерфейс и instanceof
+        System.out.println("--- Демонстрация интерфейса и instanceof ---");
+        for (BasePlayer player : players) {
+            System.out.println("\nИгрок: " + player.getName());
+            System.out.println("ID (раннее связывание, final): " + player.getId()); 
+            System.out.println("Описание (позднее): " + player.describe());
+            System.out.println("Решение: " + player.decideAction());
+            
+             
+            if (player instanceof PlayerAction actionPlayer) {
+                try {
+                    actionPlayer.makeBet(100); // Успешное действие
+                    
+                    System.out.println("  [Провокация] Пытаемся поставить 10000 фишек...");
+                    actionPlayer.makeBet(10000); 
+                    
+                } catch (InsufficientFundsException e) {
+                    // частное исключение 
+                    System.err.println("  [ОШИБКА] " + e.getMessage());
+                } catch (Exception e) {
+                    // Общее исключение 
+                    System.err.println("  [НЕИЗВЕСТНАЯ ОШИБКА] " + e.getMessage());
+                }
+            }
+        }
+
+        // 3. Смена стратегии  (Динамическое конфигурирование)
+        System.out.println("\n--- Смена стратегии (Динамическое конфигурирование) ---");
+        bot.setStrategy(new PassiveStrategy());
+        System.out.println("Бот Alpha сменил стратегию. Новое решение: " + bot.decideAction());
+
+        // 4. Comparable и try-with-resources
+        System.out.println("\n--- Comparable и try-with-resources ---");
+        
+        try (IssueLog log = new IssueLog("Лог Сортировки")) {
+            List<Card> deck = new ArrayList<>();
+            deck.add(new Card(Suit.HEARTS, Rank.ACE));
+            deck.add(new Card(Suit.SPADES, Rank.TWO));
+            deck.add(new Card(Suit.CLUBS, Rank.KING));
+            
+            Collections.sort(deck); // Сортировка работает через Comparable
+            log.write("Карты отсортированы: " + deck);
+            
+        } 
     }
-
-    private static void demoDeepCopy()
-    {
-        System.out.println("\n=== 4. Глубокая копия (Deep Copy) ===");
-
-        HumanPlayer orig = new HumanPlayer("Alex", 1000);
-        HumanPlayer copy = new HumanPlayer(orig);
-
-        System.out.println("Оригинал до:   " + orig.getNickname());
-
-        copy.getNickname().append("(no orig) ");
-        System.out.println("Оригинал после "+orig.getNickname());
-        System.out.println("Rjgbz после "+copy.getNickname());
-    }
-
-    private static void demoThis()
-    {
-        System.out.println("\n=== 6. Использование this ===");
-        HumanPlayer p1 = new HumanPlayer("Mark",1234);
-        BotPlayer p2 = new BotPlayer("Oleg",1234,"Loose");
-        //возврат this
-        BasePlayer p1_copy = p1.sitDown(p2);
-        p1_copy.sitDown(p2); 
-
-    }
-
-    private static void demoEqualsAndHashCode()
-    {
-        System.out.println("\n=== 5. Сравнение equals и hashCode ===");
-        HumanPlayer p1 = new HumanPlayer("Test", 100);
-        HumanPlayer p2 = new HumanPlayer("Test", 100);
-        HumanPlayer p3 = p1; // Ссылка на тот же объект
-
-        System.out.println("p1.equals(p2): " + p1.equals(p2) + " (разные ID)");
-        System.out.println("p1.equals(p3): " + p1.equals(p3) + " (один и тот же объект)");
-        System.out.println("p1.hashCode() == p2.hashCode(): " + (p1.hashCode() == p2.hashCode()));
-        System.out.println("p1.hashCode() == p3.hashCode(): " + (p1.hashCode() == p3.hashCode()));
-    }
-
-
 }

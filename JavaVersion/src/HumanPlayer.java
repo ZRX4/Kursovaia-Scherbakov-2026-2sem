@@ -7,25 +7,23 @@ public class HumanPlayer extends BasePlayer
         System.out.println("[HumanPlayer ctor] " + getName());
     }
 
-    public HumanPlayer(HumanPlayer other)
-    {
-        super(other);
-        System.out.println("[BotPlayer copy ctor]");
-    }
-
+   
     @Override
     public String describe() {
-        return super.describe() + " (Human)";
+       return getName() + " [" + getStack() + "] (Human)";
     }
 
-    @Override
     public String decideAction() {
+        if (getStrategy() != null) {
+            int bet = getStrategy().calculateBet(50, getStack());
+            return "bet " + bet;
+        }
         return "call";
     }
 
     @Override
     public BasePlayer clone() {
-        return new HumanPlayer(this);
+        return new HumanPlayer(getName(), getStack()); 
     }
 
 }
