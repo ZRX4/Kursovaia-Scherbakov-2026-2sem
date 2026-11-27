@@ -2,22 +2,21 @@
 #include <iostream>
 
 BasePlayer::BasePlayer(std::string_view name, int stack)
-	:m_name{ name }
-	, m_stack{ stack }
+	: m_nickname{ std::make_shared<std::string>(name) }
+	, m_isDealer{ false }
+	, m_name{ name }
 	, m_id{ NextId() }
-	, m_nickname{ std::make_shared<std::string>(name)}
+	, m_stack{ stack }
 {
-
 	std::cout << "[BasePlayer ctor] " << GetName() << "\n";
 }
 
 BasePlayer::BasePlayer(const BasePlayer& other)
-	:m_name{ other.m_name }
-	, m_stack{ other.m_stack }
-	, m_id{ NextId() } // новый id тк новый игрок
-	, m_nickname{ std::make_shared<std::string>(*other.m_nickname) }
+	: m_nickname{ std::make_shared<std::string>(*other.m_nickname) }
 	, m_isDealer{ other.m_isDealer }
-
+	, m_name{ other.m_name }
+	, m_id{ NextId() }
+	, m_stack{ other.m_stack }
 {
 	std::cout << "[BasePlayer copy ctor] " << m_name << "\n";
 }
@@ -68,6 +67,11 @@ std::string BasePlayer::Describe() const
 int BasePlayer::NextId() 
 {
 	return ++s_lastId;
+}
+
+void BasePlayer::SetStrategy(std::unique_ptr<IBettingStrategy> strategy)
+{
+	m_strategy = std::move(strategy);
 }
 
 BasePlayer::~BasePlayer() 
